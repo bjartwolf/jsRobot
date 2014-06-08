@@ -1,0 +1,14 @@
+{
+  "name": "jsrobot",
+  "version": "0.0.0",
+  "description": "A lil robot",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "~1.4.5"
+  }
+}
