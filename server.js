@@ -18,35 +18,34 @@ function color(r,g,b) {
 
 function send(msg) {
    if (sending) throw "Can not send in sending state";
-   console.log("sending " + msg);
    sending = true;
    sp.write(msg, function(err, results) {
    if (err) {
        console.log('err ' + err);
    } else {
-        
-        console.log('results ' + results);
 	sp.drain( function () { sending = false;});
-//        setTimeout(function () { sending = false;  }, 1000);
    }
  });
 }
 
 function fsm() {
-   var state = "Init"; 
-   var messages = [];
+   var READY_TO_PROCESS_MSG = "ReadyToProcessMessage",
+       INIT = "Init",
+       PROCESSING_MSG = "ProcessingMessage",
+       state = INIT, 
+       messages = [];
    function loop() {
-       if (state == "Init") {
+       if (state == INIT) {
            if (serialOpen && !sending) {
-              state = "ReadyToProcessMessage";
+              state = READY_TO_PROCESS_MSG; 
 	   }
-       } else if (state == "ProcessingMessage") {
+       } else if (state == PROCESSING_MSG) {
            if(!sending) {
-              state = "ReadyToProcessMessage";
+              state = READY_TO_PROCESS_MSG; 
            }
-       } else if (state == "ReadyToProcessMessage") {
+       } else if (state == READY_TO_PROCESS_MSG) {
            if (messages.length > 0) {
-             state = "ProcessingMessage";
+             state = PROCESSING_MSG; 
 	     console.log("Processing " + messages);
              var msg = messages.pop(); 
              if (msg == 'red' || msg == 'green' || msg == 'blue' ) {
@@ -60,8 +59,6 @@ function fsm() {
    }
    setImmediate(loop); 
    return function(msg) {
-      console.log("queue : " + messages);
-      console.log("queue length : " + messages.length);
       messages.unshift(msg);
    }
 }
@@ -74,7 +71,7 @@ http.createServer(function(req, res) {
      res.end(url + ' queued');
   } else {
      res.writeHead(404, {'Content-Type': 'text/plain'});
-     res.end('not understood');
+     res.end('not message here');
   }
 }).listen(80,'192.168.1.13');
 
