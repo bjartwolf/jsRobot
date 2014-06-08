@@ -37,7 +37,7 @@ function fsm() {
        transitions = {},
        actions = {};
    transitions[INIT] = {};
-   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return sp.isOpen && !sp.sending;};
+   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return sp.isOpen;};
    transitions[PROCESSING_MSG] = {};
    transitions[PROCESSING_MSG][READY_TO_PROCESS_MSG] = function () {return !sp.sending;};
    transitions[READY_TO_PROCESS_MSG] = {};
@@ -87,8 +87,3 @@ sp.on("open", function () {
 }); 
 
 var queue = fsm();
-//repl.start({
-//  prompt: "node via stdin> ",
-//  input: process.stdin,
-//  output: process.stdout
-//}).context.sp = sp;
