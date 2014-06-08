@@ -12,7 +12,10 @@ sp.on("open", function () {
    console.log("opened serial port");
 }); 
 
+// Takes input in forms of three-char strings of ints
+// "000" to "255"
 function color(r,g,b) {
+  if (r.length != 3 || g.length != 3 || b.length != 3) throw "Error in input" 
   return "#PR"+r+"G"+g+"B"+b+"T001";
 }
 
