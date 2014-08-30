@@ -14,14 +14,19 @@ function color(r,g,b) {
   return "#PR"+r+"G"+g+"B"+b+"T001";
 }
 
+
 function send(msg) {
    if (sp.sending) throw "Can not send in sending state";
    sp.sending = true;
-   sp.write(msg, function(err, results) {
+   var serialCmd;
+   if (msg == 'red') serialCmd = color("255","000","000"); 
+   else if (msg == 'green') serialCmd = color("000","255","000"); 
+   else if (msg == 'blue') serialCmd = color("000","000","255"); 
+   else throw "No such command"
+   sp.write(serialCmd, function(err, results) {
 	   if (err) {
-	       console.log('err ' + err);
+	       throw err; 
 	   } else {
-		console.log("Sending");
 		sp.drain( function () { sp.sending = false;});
 	   }
    });
@@ -44,10 +49,7 @@ function fsm() {
    transitions[READY_TO_PROCESS_MSG][PROCESSING_MSG] = function () {return messages.length > 0; };	
    actions[PROCESSING_MSG] = function () {
 		     console.log("Processing " + messages);
-		     var msg = messages.pop(); 
-		     if (msg == 'red') send(color("255","000","000")); 
-		     if (msg == 'green') send(color("000","255","000")); 
-		     if (msg == 'blue') send(color("000","000","255")); 
+		     send(messages.pop());
    		} 
    function loop() {
         for (possibleNewState in transitions[state]) {
