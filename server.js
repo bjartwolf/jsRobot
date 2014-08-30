@@ -19,25 +19,13 @@ function fsm() {
    actions[PROCESSING_MSG] = function () {
 		     rapiro.send(messages.pop());
    		} 
-   function loop() {
-        for (possibleNewState in transitions[state]) {
-		if (transitions[state][possibleNewState]()) {
-			   // Changing state
-			   console.log("Changed state from " + state + " to " + possibleNewState); 
-			   state = possibleNewState;
-			   // If any actions are defined on the new state
-                           // activate the action
-			   if (actions[state]) actions[state]();
-			   break;
-		}
-	}
-        setImmediate(loop); 
-   }
-   setImmediate(loop); 
+   require("./fsm.js")(transitions, actions, state);
    return function(msg) {
       messages.unshift(msg);
    }
 }
+
+var queue = fsm();
 
 http.createServer(function(req, res) {
   var url = req.url.substring(1); // remove slash
@@ -53,4 +41,3 @@ http.createServer(function(req, res) {
 }).listen(80,'192.168.1.13');
 console.log("Listening");
 
-var queue = fsm();
