@@ -13,5 +13,5 @@ module.exports = function (transitions, actions, state) {
 		}
 		setImmediate(loop); 
 	   }
-	   setImmediate(loop); 
+	   loop(); 
 }
