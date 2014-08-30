@@ -42,6 +42,7 @@ function fsm() {
 http.createServer(function(req, res) {
   var url = req.url.substring(1); // remove slash
   if (url == 'red' || url == 'green' || url == 'blue') {
+     console.log("Queued " + url);
      queue(url); 
      res.writeHead(200, {'Content-Type': 'text/plain'});
      res.end(url + ' queued');
