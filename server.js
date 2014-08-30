@@ -11,18 +11,19 @@ function fsm() {
        transitions = {},
        actions = {};
    transitions[INIT] = {};
-   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return rapiro.initialized();};
+   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return rapiro.state()=="READY_TO_RECIEVE";};
    transitions[PROCESSING_MSG] = {};
-   transitions[PROCESSING_MSG][READY_TO_PROCESS_MSG] = function () {return !rapiro.sending();};
+   transitions[PROCESSING_MSG][READY_TO_PROCESS_MSG] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
    transitions[READY_TO_PROCESS_MSG] = {};
    transitions[READY_TO_PROCESS_MSG][PROCESSING_MSG] = function () {return messages.length > 0; };	
    actions[PROCESSING_MSG] = function () {
-		     console.log("Processing " + messages);
 		     rapiro.send(messages.pop());
    		} 
    function loop() {
         for (possibleNewState in transitions[state]) {
 		if (transitions[state][possibleNewState]()) {
+			   // Changing state
+			   console.log("Changed state from " + state + " to " + possibleNewState); 
 			   state = possibleNewState;
 			   // If any actions are defined on the new state
                            // activate the action

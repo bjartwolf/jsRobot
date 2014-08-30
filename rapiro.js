@@ -41,5 +41,8 @@ sp.on("open", function () {
 }); 
 
 exports.send = send;
-exports.sending = function () { return sending; };
-exports.initialized  = function () {return isOpen; };
+exports.state = function () {
+	 if (sending) return "SENDING";
+	 else if (isOpen) return "READY_TO_RECIEVE";
+         else return "INITIALIZING";
+}
