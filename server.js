@@ -1,36 +1,5 @@
-var serialport = require("serialport"),
-    http = require("http");
-
-var sp = new serialport.SerialPort("/dev/ttyAMA0", {
-        baudrate: 300 
-});
-sp.isOpen = false;
-
-// Takes input in forms of three-char strings of ints
-// "000" to "255"
-function color(r,g,b) {
-  if (r.length != 3 || g.length != 3 || b.length != 3) throw "Input 0 as 000 etc" 
-  if (parseInt(r)<0 && parseInt(r)>255 && parseInt(g)<0 && parseInt(g)>255 && parseInt(b)<0 && parseInt(b) > 255) throw "Values out of range";
-  return "#PR"+r+"G"+g+"B"+b+"T001";
-}
-
-
-function send(msg) {
-   if (sp.sending) throw "Can not send in sending state";
-   sp.sending = true;
-   var serialCmd;
-   if (msg == 'red') serialCmd = color("255","000","000"); 
-   else if (msg == 'green') serialCmd = color("000","255","000"); 
-   else if (msg == 'blue') serialCmd = color("000","000","255"); 
-   else throw "No such command"
-   sp.write(serialCmd, function(err, results) {
-	   if (err) {
-	       throw err; 
-	   } else {
-		sp.drain( function () { sp.sending = false;});
-	   }
-   });
-}
+var http = require("http"),
+    rapiro = require("./rapiro.js");
 
 function fsm() {
    var READY_TO_PROCESS_MSG = "ReadyToProcessMessage",
@@ -42,14 +11,14 @@ function fsm() {
        transitions = {},
        actions = {};
    transitions[INIT] = {};
-   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return sp.isOpen;};
+   transitions[INIT][READY_TO_PROCESS_MSG] = function () { return rapiro.initialized();};
    transitions[PROCESSING_MSG] = {};
-   transitions[PROCESSING_MSG][READY_TO_PROCESS_MSG] = function () {return !sp.sending;};
+   transitions[PROCESSING_MSG][READY_TO_PROCESS_MSG] = function () {return !rapiro.sending();};
    transitions[READY_TO_PROCESS_MSG] = {};
    transitions[READY_TO_PROCESS_MSG][PROCESSING_MSG] = function () {return messages.length > 0; };	
    actions[PROCESSING_MSG] = function () {
 		     console.log("Processing " + messages);
-		     send(messages.pop());
+		     rapiro.send(messages.pop());
    		} 
    function loop() {
         for (possibleNewState in transitions[state]) {
@@ -81,11 +50,5 @@ http.createServer(function(req, res) {
   }
 }).listen(80,'192.168.1.13');
 console.log("Listening");
-
-
-sp.on("open", function () {
-   sp.isOpen = true; 
-   console.log("opened serial port");
-}); 
 
 var queue = fsm();
