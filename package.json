@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "javascript-state-machine": "^2.3.2",
     "serialport": "~1.4.5"
   }
 }
