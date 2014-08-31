@@ -20,8 +20,8 @@ var fsm = sm.create({
     }],
     callbacks: {
         onINITIALIZING: function() {
-            //sp = new serialport.SerialPort("/dev/pts/23", {
-            sp = new serialport.SerialPort("/dev/ttyAMA0", { baudrate: 300 });
+            sp = new serialport.SerialPort("/dev/pts/23", { baudrate: 300 });
+            //sp = new serialport.SerialPort("/dev/ttyAMA0", { baudrate: 300 });
             sp.on("open", function() { // Notify state machine that serialport is open
                 fsm.open();
             });
@@ -40,7 +40,7 @@ var fsm = sm.create({
                 } else {
                     sp.drain(function() {
                         console.log("Sent: " + serialCmd);
-                        fsm.transition(); // This allows for leaving state
+                        setTimeout( function () {fsm.transition();}, 2000); // This allows for leaving state
                     });
                 }
             });
@@ -60,7 +60,7 @@ function convertColorToSerial(msg) {
 
 // Takes input in forms of three-char strings of ints such as "000", "255", "124"
 // and returns a formatted string to send to Rapiro to change colors of eyes
-function color(msg) {
+function color(r,g,b) {
     if (r.length != 3 || g.length != 3 || b.length != 3) throw "Input 0 as 000 etc"
     if (parseInt(r) < 0 || parseInt(r) > 255 || parseInt(g) < 0 || parseInt(g) > 255 || parseInt(b) < 0 || parseInt(b) > 255) throw "Values out of range";
     return "#PR" + r + "G" + g + "B" + b + "T001";
