@@ -1,6 +1,8 @@
 var serialport = require("serialport"),
     sm = require('javascript-state-machine');
 
+var sp; // Serialport as global variable to be reachable from all states
+
 var fsm = sm.create({
     initial: 'INITIALIZING',
     events: [{
@@ -17,7 +19,16 @@ var fsm = sm.create({
         to: 'READY_TO_RECIEVE'
     }],
     callbacks: {
-        onopen: function() {
+        onINITIALIZING: function() {
+            //sp = new serialport.SerialPort("/dev/ttyAMA0", {
+            sp = new serialport.SerialPort("/dev/pts/23", {
+                baudrate: 300
+            });
+            sp.on("open", function() { // Notify state machine that serialport is open
+                fsm.open();
+            });
+        },
+        onleaveINITIALIZING: function() { // triggering on open event
             console.log("Serialport open");
         },
         onSENDING: function(event, from, to, msg) {
@@ -34,7 +45,7 @@ var fsm = sm.create({
                     throw err;
                 } else {
                     sp.drain(function() {
-			console.log("Sent: " + serialCmd);
+                        console.log("Sent: " + serialCmd);
                         fsm.transition(); // This allows for leaving state
                     });
                 }
@@ -51,17 +62,6 @@ function color(r, g, b) {
     if (parseInt(r) < 0 || parseInt(r) > 255 || parseInt(g) < 0 || parseInt(g) > 255 || parseInt(b) < 0 || parseInt(b) > 255) throw "Values out of range";
     return "#PR" + r + "G" + g + "B" + b + "T001";
 }
-
-//var sp = new serialport.SerialPort("/dev/ttyAMA0", {
-var sp = new serialport.SerialPort("/dev/pts/23", {
-    baudrate: 300
-});
-
-
-sp.on("open", function() {
-    // Notify state machine that serialport is open
-    fsm.open();
-});
 
 exports.send = function(msg) {
     fsm.send(msg);
