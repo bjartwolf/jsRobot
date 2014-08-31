@@ -71,4 +71,12 @@ exports.send = function(msg) {
 };
 exports.state = function() {
     return fsm.current;
-};
+}
+/*
+var repl = require("repl");
+repl.start({
+  prompt: "node via stdin> ",
+  input: process.stdin,
+  output: process.stdout
+}).context.fsm = fsm;
+*/
