@@ -12,6 +12,10 @@
   function onMessage(evt) {
     var imgElement = document.getElementById("statemachinepic");
     imgElement.src= "http://10.0.0.5/pic" + new Date().getTime();
+    var lastupdate = document.getElementById("lastupdate");
+    var prevupdate = document.getElementById("prevupdate");
+    prevupdate.innerHTML = lastupdate.innerHTML; 
+    lastupdate.innerHTML = evt.data + "at time: "+ new Date().getTime();
   }
 
   window.addEventListener("load", init, false);
@@ -20,4 +24,6 @@
 <h2>WebSocket Test</h2>  
 <div id="output"></div> 
 <img src="/pic"/ id="statemachinepic">
+<div id="lastupdate"> Last update </div>
+<div id="prevupdate"> Previous update </div>
 </html>
