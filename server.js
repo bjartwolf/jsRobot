@@ -1,9 +1,10 @@
 var http = require("http"),
     rapiro = require("./rapiro.js"),
+    WebSocket = require("ws"),
     Sound = require("simple-mplayer"),
     fsm = require('./fsm.js');
 
-function process_messages_fsm() {
+function process_messages_fsm(wss) {
    //var hatexml = "./hatexml.mp3"; 
    //var hatesound = new Sound(hatexml);
    var READY_TO_PROCESS_MSG = "ReadyToProcessMessage",
@@ -24,13 +25,22 @@ function process_messages_fsm() {
     //   hatesound.play();
 		     rapiro.send(messages.pop());
    } 
-   fsm.machine(transitions, actions, state, states);
+   fsm.machine(transitions, actions, state, states, wss);
    return function(msg) {
       messages.unshift(msg);
    }
 }
 
-var queue = process_messages_fsm();
+
+var ip = '10.0.0.5';
+var wss = new WebSocket.Server({host: ip, port:8080});
+
+//ws.on('message', function(message) {
+//  ws.send(message);
+//});
+
+var queue = process_messages_fsm(wss);
+
 http.createServer(function(req, res) {
   var cmd = req.url.substring(1); // remove slash
   if (cmd == 'red' || cmd == 'green' || cmd == 'blue') {
@@ -50,6 +60,5 @@ http.createServer(function(req, res) {
      res.writeHead(404, {'Content-Type': 'text/plain'});
      res.end('not message here');
   }
-}).listen(80,'10.0.0.5');
+}).listen(80, ip);
 console.log("Listening");
-
