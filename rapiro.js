@@ -33,14 +33,15 @@ var fsm = sm.create({
             fsm.finishedSending(msg);
         }, // THis is weird... Must refactor async thingy 
         onleaveSENDING: function(_, _, _, msg) {
-           var serialCmd = convertColorToSerial(msg);
+           var serialCmd = convertCmdToSerial(msg);
            sp.write(serialCmd, function(err, results) {
                 if (err) {
                     throw err;
                 } else {
                     sp.drain(function() {
                         console.log("Sent: " + serialCmd);
-                        setTimeout( function () {fsm.transition();}, 2000); // This allows for leaving state
+                        fsm.transition();
+//                        setTimeout( function () {fsm.transition();}, 2000); // This allows for leaving state
                     });
                 }
             });
@@ -49,11 +50,16 @@ var fsm = sm.create({
     }
 });
 
-function convertColorToSerial(msg) {
+function convertCmdToSerial(msg) {
     var serialCmd;
     if (msg == 'red') serialCmd = color("255", "000", "000");
     else if (msg == 'green') serialCmd = color("000", "255", "000");
     else if (msg == 'blue') serialCmd = color("000", "000", "255");
+    else if (msg == 'stop') serialCmd = "#M0";
+    else if (msg == 'forward') serialCmd = "#M1";
+    else if (msg == 'backward') serialCmd = "#M2";
+    else if (msg == 'waveandgreen') serialCmd = "#M5";
+    else if (msg == 'raisehandsandblue') serialCmd = "#M7";
     else throw "No such command"
     return serialCmd;
 } 

@@ -24,8 +24,8 @@ function process_messages_fsm(wss) {
        transitions = {},
        actions = {};
        function msgEmptyAndRapiroReady() { return messages.length  == 0 && rapiroIsReady(); };	
-       function nextMessageXML () { return messages[0] == "xml"; };	
-       function nextMessageJSON () { return messages[0] == "json"; };	
+       function nextMessageXML () { return messages[0] == "xml" && rapiroIsReady(); };	
+       function nextMessageJSON () { return messages[0] == "json" && rapiroIsReady(); };	
        function rapiroIsReady() { return rapiro.state()=="READY_TO_RECIEVE";}; 
        transitions[INIT] = {};
        transitions[INIT][NEUTRAL] = function () { return rapiroIsReady();} 
@@ -54,24 +54,36 @@ function process_messages_fsm(wss) {
        transitions[PROCESSING_JSON_RESTFUL][RESTFUL] = function () { return rapiroIsReady();}; 
        
        actions[PROCESSING_JSON_RESTFUL] = function () {
+         rapiro.send("green");
          messages.shift();
        }
        actions[PROCESSING_JSON_ENTERPRISY] = function () {
+         rapiro.send("green");
          messages.shift();
        }
        actions[PROCESSING_XML_RESTFUL] = function () {
+         rapiro.send("yellow");
          messages.shift();
-       }
+      }
        actions[PROCESSING_XML_ENTERPRISY] = function () {
-         messages.shift();
+         rapiro.send("yellow");
+         var msg = messages.shift();
+         console.log(msg.body);
        }
+       actions[DEADINSIDE] = function () {
+         hatesound.play();
+		     rapiro.send("raisehandandblue");
+       } 
+       actions[RESTAFARI] = function () {
+         var msg = messages.shift();
+		     rapiro.send("waveandgreen");
+       } 
        actions[RESTFUL] = function () {
-    //   hatesound.play();
          var msg = messages.shift();
 		     rapiro.send("green");
        } 
    fsm.machine(transitions, actions, state, states, wss);
-   return function(msg, requestBody) { 
+   return function(msg) { 
       messages.push(msg);
    }
 }
@@ -89,10 +101,8 @@ var server = http.createServer(function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end(index);
   } else if (cmd.substr(0,3)  == "pic") {
-     var t1 = new Date().getTime();
      res.writeHead(200, {'Content-Type': 'image/png'});
-     fsm.draw(res, t1);
-     console.log(new Date().getTime() - t1);
+     fsm.draw(res);
   } else if (cmd == "data") {
      res.writeHead(200, {'Content-Type': 'text/plain'});
      var msg = req.headers['content-type'];

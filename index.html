@@ -17,7 +17,7 @@
     var lastupdate = document.getElementById("lastupdate");
     var prevupdate = document.getElementById("prevupdate");
     prevupdate.innerHTML = lastupdate.innerHTML; 
-    lastupdate.innerHTML = evt.data + "at time: "+ new Date().getTime();
+    lastupdate.innerHTML = evt.data + " at time: "+ new Date().getTime();
     //updateFSM();
   }
   window.setInterval( function () {

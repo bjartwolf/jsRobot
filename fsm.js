@@ -37,7 +37,7 @@ exports.machine = function (transitions, actions, state, states, wss) {
 
 // Takes a http response stream and writes 
 // a png of current state machine to it
-exports.draw = function (res, t1) {
+exports.draw = function (res) {
   var g = graphviz.digraph("G");
   for (state in _states) {
     var stateNode = g.addNode(_states[state], {"color" : "blue" });
@@ -58,6 +58,5 @@ exports.draw = function (res, t1) {
   }
   g.render("png", function(render) {
       res.end(render);
-      console.log(new Date().getTime() - t1);
   });
 }
