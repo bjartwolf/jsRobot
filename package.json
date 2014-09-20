@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "serialport": "~1.4.5"
+    "serialport": "1.4.5",
+    "simple-mplayer": "0.0.3",
+    "graphviz": "0.0.8"
   }
 }
