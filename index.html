@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script language="javascript" type="text/javascript">
+  var wsUri = "ws://10.0.0.5:8080/";
+  var output; 
+  function init() {
+    websocket = new WebSocket(wsUri);
+    websocket.onmessage = function (evt) { onMessage(evt) };
+  }
+
+  function onMessage(evt) {
+    var imgElement = document.getElementById("statemachinepic");
+    imgElement.src= "http://10.0.0.5/pic" + new Date().getTime();
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+
+<h2>WebSocket Test</h2>  
+<div id="output"></div> 
+<img src="/pic"/ id="statemachinepic">
+</html>

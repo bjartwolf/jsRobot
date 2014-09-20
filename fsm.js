@@ -24,7 +24,6 @@ exports.machine = function (transitions, actions, state, states, wss) {
         if (_actions[_state]) _actions[_state]();
         // can draw here and send refresh signal to browser to get new image by websockets.
         // draw(); 
-        console.log(_wss);
         for (var i in _wss.clients) {
           _wss.clients[i].send("new state: " + _state);
         }

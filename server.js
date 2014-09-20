@@ -1,5 +1,6 @@
 var http = require("http"),
     rapiro = require("./rapiro.js"),
+    fs = require("fs"),
     WebSocket = require("ws"),
     Sound = require("simple-mplayer"),
     fsm = require('./fsm.js');
@@ -48,7 +49,11 @@ http.createServer(function(req, res) {
      queue(cmd); 
      res.writeHead(200, {'Content-Type': 'text/plain'});
      res.end(cmd + ' queued');
- } else if (cmd == "pic") {
+ } else if (cmd == "html") {
+    var index = fs.readFileSync("index.html");
+     res.writeHead(200, {'Content-Type': 'text/html'});
+     res.end(index);
+ } else if (cmd.substr(0,3)  == "pic") {
      res.writeHead(200, {'Content-Type': 'image/png'});
      fsm.draw(res);
   } else if (cmd == "json") {
