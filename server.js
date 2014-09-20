@@ -82,15 +82,17 @@ var wss = new WebSocket.Server({host: ip, port:8080});
 
 var queue = process_messages_fsm(wss);
 
-http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
   var cmd = req.url.substring(1); // remove slash
   if (cmd == "fsm") {
     var index = fs.readFileSync("index.html");
-     res.writeHead(200, {'Content-Type': 'text/html'});
-     res.end(index);
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end(index);
   } else if (cmd.substr(0,3)  == "pic") {
+     var t1 = new Date().getTime();
      res.writeHead(200, {'Content-Type': 'image/png'});
-     fsm.draw(res);
+     fsm.draw(res, t1);
+     console.log(new Date().getTime() - t1);
   } else if (cmd == "data") {
      res.writeHead(200, {'Content-Type': 'text/plain'});
      var msg = req.headers['content-type'];
@@ -103,4 +105,5 @@ http.createServer(function(req, res) {
      res.end('No endpoint');
   }
 }).listen(80, ip);
+//server.timeout=4000;
 console.log("Listening");

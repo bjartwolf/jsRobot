@@ -8,16 +8,21 @@
     websocket = new WebSocket(wsUri);
     websocket.onmessage = function (evt) { onMessage(evt) };
   }
-
+  function updateFSM() {
+      var time = new Date().getTime();
+      var imgElement = document.getElementById("statemachinepic");
+      imgElement.src= "http://10.0.0.5/pic" + time; // + Math.round(time/1000).toString();
+  }
   function onMessage(evt) {
-    var imgElement = document.getElementById("statemachinepic");
-    imgElement.src= "http://10.0.0.5/pic" + new Date().getTime();
     var lastupdate = document.getElementById("lastupdate");
     var prevupdate = document.getElementById("prevupdate");
     prevupdate.innerHTML = lastupdate.innerHTML; 
     lastupdate.innerHTML = evt.data + "at time: "+ new Date().getTime();
+    //updateFSM();
   }
-
+  window.setInterval( function () {
+      updateFSM();
+  },4000);
   window.addEventListener("load", init, false);
 </script>
 
