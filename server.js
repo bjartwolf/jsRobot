@@ -23,33 +23,37 @@ function process_messages_fsm(wss) {
        state = INIT,
        transitions = {},
        actions = {};
+       function messagesIsEmpty() { return messages.length  == "0"; };	
+       function nextMessageXML () { return messages[0] == "json"; };	
+       function nextMessageJSON () { return messages[0] == "xml"; };	
+       function rapiroIsReady() { return rapiro.state()=="READY_TO_RECIEVE";}; 
        transitions[INIT] = {};
-       transitions[INIT][NEUTRAL] = function () { return rapiro.state()=="READY_TO_RECIEVE";};
+       transitions[INIT][NEUTRAL] = function () { return rapiroIsReady();} 
 //       transitions[PROCESSING_MSG] = {};
  //      transitions[PROCESSING_MSG][NEUTRAL] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
        transitions[NEUTRAL] = {};
-       transitions[NEUTRAL][RESTFUL] = function () {return messages[0] == "json"; };	
-       transitions[NEUTRAL][ENTERPRISY] = function () {return messages[0] == "xml"; };	
+       transitions[NEUTRAL][RESTFUL] = function () { return nextMessageJSON();} 
+       transitions[NEUTRAL][ENTERPRISY] = function () { return nextMessageXML();} 
        transitions[ENTERPRISY] = {};
-       transitions[ENTERPRISY][NEUTRAL] = function () {return messages.length  == "0"; };	
-       transitions[ENTERPRISY][PROCESSING_XML_ENTERPRISY] = function () {return messages[0] == "xml"; };	
-       transitions[ENTERPRISY][PROCESSING_JSON_ENTERPRISY] = function () {return messages[0] == "json"; };	
+       transitions[ENTERPRISY][NEUTRAL] = function () { return messagesIsEmpty();};
+       transitions[ENTERPRISY][PROCESSING_XML_ENTERPRISY] = function () { return nextMessageXML(); } 
+       transitions[ENTERPRISY][PROCESSING_JSON_ENTERPRISY] = function () { return nextMessageJSON(); } 
        transitions[RESTFUL] = {};
-       transitions[RESTFUL][PROCESSING_XML_RESTFUL] = function () {return messages[0] == "xml"; };	
-       transitions[RESTFUL][PROCESSING_JSON_RESTFUL] = function () {return messages[0] == "json"; };	
-       transitions[RESTFUL][NEUTRAL] = function () {return messages.length  == "0"; };	
+       transitions[RESTFUL][PROCESSING_XML_RESTFUL] = function () { return nextMessageXML() ;} 
+       transitions[RESTFUL][PROCESSING_JSON_RESTFUL] = function () { return nextMessageJSON();} 
+       transitions[RESTFUL][NEUTRAL] = function () { return messagesIsEmpty(); }; 
        transitions[PROCESSING_JSON_RESTFUL] = {};
        transitions[PROCESSING_XML_RESTFUL] = {};
        transitions[PROCESSING_JSON_ENTERPRISY] = {};
        transitions[PROCESSING_XML_ENTERPRISY] = {};
-       transitions[PROCESSING_JSON_RESTFUL][RESTAFARI] = function () {return messages[0] == "json"; };	
-       transitions[PROCESSING_XML_ENTERPRISY][DEADINSIDE] = function () {return messages[0] == "xml"; };	
+       transitions[PROCESSING_JSON_RESTFUL][RESTAFARI] = function () { return nextMessageJSON();}; 
+       transitions[PROCESSING_XML_ENTERPRISY][DEADINSIDE] = function () { return nextMessageXML();}; 
 
-       transitions[PROCESSING_XML_ENTERPRISY][ENTERPRISY] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
-       transitions[PROCESSING_XML_RESTFUL][RESTFUL] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
+       transitions[PROCESSING_XML_ENTERPRISY][ENTERPRISY] = function () { return rapiroIsReady();}; 
+       transitions[PROCESSING_XML_RESTFUL][RESTFUL] = function () { return rapiroIsReady();}; 
 
-       transitions[PROCESSING_JSON_ENTERPRISY][ENTERPRISY] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
-       transitions[PROCESSING_JSON_RESTFUL][RESTFUL] = function () {return rapiro.state()=="READY_TO_RECIEVE";};
+       transitions[PROCESSING_JSON_ENTERPRISY][ENTERPRISY] = function () { return rapiroIsReady();}; 
+       transitions[PROCESSING_JSON_RESTFUL][RESTFUL] = function () { return rapiroIsReady();}; 
        
        actions[RESTFUL] = function () {
     //   hatesound.play();
