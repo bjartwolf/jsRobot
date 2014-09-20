@@ -48,11 +48,11 @@ exports.draw = function (res) {
       if (_transitions[_states[state]]) {
         if (_transitions[_states[state]][_states[toState]]) {
           var functionStr = _transitions[_states[state]][_states[toState]].toString();
-          var re = /function\s+\(.*\)\s+\{\sreturn(.+);\}/; 
+          var re = /function\s+\(.*\)\s+\{\sreturn(.+)\(\);\}/; 
           m = re.exec(functionStr);
-          if (m == null) m = ["", ""]; 
-          g.addEdge(_states[state],_states[toState])
-           .set("label", m[1]);
+          if (m == null) m = ["", "."]; 
+         // g.addEdge(_states[state],_states[toState])
+          g.addEdge(_states[state],_states[toState], {"label": m[1], "color": "#111111", "fontsize" : "8"});
         }
       }
     }
