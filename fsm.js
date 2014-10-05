@@ -22,7 +22,6 @@ exports.machine = function (transitions, actions, state, states, wss) {
         // activate the action
         if (_actions[_state]) _actions[_state]();
         // can draw here and send refresh signal to browser to get new image by websockets.
-        // draw(); 
         for (var i in _wss.clients) {
           _wss.clients[i].send("new state: " + _state);
         }
@@ -36,13 +35,8 @@ exports.machine = function (transitions, actions, state, states, wss) {
 
 exports.graphlib = function (res) {
   var g = new dagreD3.Digraph();
-
-  //var g = new graphlib.Graph({directed: true, compound:false, multigraph: false});
-//   g.setDefaultEdgeLabel(function() { return {}; });
-
   for (state in _states) {
-    var nospacestate = _states[state].replace(/ /g,'');
-    var stateNode = g.addNode(nospacestate, {label: _states[state]});//,{"color" : "blue" });
+    var stateNode = g.addNode(_states[state], {label: _states[state]});//,{"color" : "blue" });
   }
   for (state in _states) {
     if (_states[state] === _state) {
@@ -55,44 +49,11 @@ exports.graphlib = function (res) {
           var re = /function\s+\(.*\)\s+\{\sreturn(.+)\(\);\}/; 
           m = re.exec(functionStr);
           if (m == null) m = ["", "."]; 
-    	    var nospacestate = _states[state].replace(/ /g,'');
-    	    var nospacetostate = _states[toState].replace(/ /g,'');
-            console.log("Getting there");
-    	    console.log("from state: " + nospacestate);
-    	    console.log("to state: " + nospacetostate);
-	    if(nospacetostate && nospacestate) {
-              g.addEdge(null, nospacestate, nospacetostate);
-            }
+          g.addEdge(null, _states[state], _states[toState], {label: m[1]});
         }
       }
     }
   }
   var serializedGraph = dagreD3.json.encode(g);
-//  res.end(serializedGraph);
   res.end(JSON.stringify(serializedGraph));
-}
-// Takes a http response stream and writes 
-// a png of current state machine to it
-exports.draw = function (res) {
-  var g = graphviz.digraph("G");
-  for (state in _states) {
-    var stateNode = g.addNode(_states[state], {"color" : "blue" });
-    if (_states[state] === _state) {
-      stateNode.set("style", "filled");
-    }
-    for (toState in _states) {
-      if (_transitions[_states[state]]) {
-        if (_transitions[_states[state]][_states[toState]]) {
-          var functionStr = _transitions[_states[state]][_states[toState]].toString();
-          var re = /function\s+\(.*\)\s+\{\sreturn(.+)\(\);\}/; 
-          m = re.exec(functionStr);
-          if (m == null) m = ["", "."]; 
-          g.addEdge(_states[state],_states[toState], {"label": m[1], "color": "#111111", "fontsize" : "8"});
-        }
-      }
-    }
-  }
-  g.render("png", function(render) {
-      res.end(render);
-  });
 }

@@ -16,13 +16,9 @@
     r.onreadystatechange = function () {
        if (r.readyState != 4 || r.status != 200) return;
        var graphJson = JSON.parse(r.responseText);
-       //var g = graphlib.json.read(graphJson);
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
-//       console.log(g);
-       var g1 = dagreD3.layout(g);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
-//       alert("Success: " + r.responseText);
      };
      r.send();
   }
@@ -32,7 +28,6 @@
     var prevupdate = document.getElementById("prevupdate");
     prevupdate.innerHTML = lastupdate.innerHTML; 
     lastupdate.innerHTML = evt.data + " at time: "+ new Date().getTime();
-    //updateFSM();
   }
   window.setInterval( function () {
       updateDagre();
@@ -40,8 +35,6 @@
   window.addEventListener("load", init, false);
 </script>
 <script src="/d3"></script>
-<!--<script src="/graphlib"></script>-->
-<!--<script src="/dagre"></script>-->
 <script src="/dagred3"></script>
 <style>
 svg {
@@ -66,7 +59,7 @@ svg {
 </style>
 
 <h2>WebSocket Test</h2>  
-<svg width=650 height=680>
+<svg width=1250 height=680>
     <g transform="translate(20,20)"/>
 </svg>
 

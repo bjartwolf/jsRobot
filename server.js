@@ -135,5 +135,4 @@ var server = http.createServer(function(req, res) {
      res.end('No endpoint');
   }
 }).listen(80, ip);
-//server.timeout=4000;
 console.log("Listening");
