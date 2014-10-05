@@ -36,12 +36,13 @@ exports.machine = function (transitions, actions, state, states, wss) {
 function getGraph () {
   var g = new dagreD3.Digraph();
   for (state in _states) {
-    var stateNode = g.addNode(_states[state], {label: _states[state]});//,{"color" : "blue" });
+   var style = "";
+   if (_states[state] === _state) {
+         style = "fill: #f77"; 
+   }
+   var stateNode = g.addNode(_states[state], {label: _states[state], style:style});//,{"color" : "blue" });
   }
   for (state in _states) {
-    if (_states[state] === _state) {
-//      stateNode.set("style", "filled");
-    }
     for (toState in _states) {
       if (_transitions[_states[state]]) {
         if (_transitions[_states[state]][_states[toState]]) {
@@ -49,7 +50,7 @@ function getGraph () {
           var re = /function\s+\(.*\)\s+\{\sreturn(.+)\(\);\}/; 
           m = re.exec(functionStr);
           if (m == null) m = ["", "."]; 
-          g.addEdge(null, _states[state], _states[toState], {label: m[1]});
+         g.addEdge(null, _states[state], _states[toState], {label: m[1]});
         }
       }
     }
