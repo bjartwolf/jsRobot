@@ -9,9 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "graphviz": "0.0.8",
+    "javascript-state-machine": "^2.3.2",
     "serialport": "1.4.5",
     "simple-mplayer": "0.0.3",
-    "graphviz": "0.0.8",
-    "javascript-state-machine": "^2.3.2"
+    "ws": "^0.4.32"
   }
 }

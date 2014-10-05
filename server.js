@@ -89,7 +89,8 @@ function process_messages_fsm(wss) {
 }
 
 
-var ip = '10.0.0.5';
+//var ip = '10.0.0.5';
+var ip = 'localhost';
 var wss = new WebSocket.Server({host: ip, port:8080});
 
 var queue = process_messages_fsm(wss);

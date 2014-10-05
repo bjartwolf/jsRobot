@@ -20,8 +20,8 @@ var fsm = sm.create({
     }],
     callbacks: {
         onINITIALIZING: function() {
-//            sp = new serialport.SerialPort("/dev/pts/23", { baudrate: 300 });
-            sp = new serialport.SerialPort("/dev/ttyAMA0", { baudrate: 300 });
+            sp = new serialport.SerialPort("/dev/pts/23", { baudrate: 300 });
+//            sp = new serialport.SerialPort("/dev/ttyAMA0", { baudrate: 300 });
             sp.on("open", function() { // Notify state machine that serialport is open
                 fsm.open();
             });
@@ -40,8 +40,8 @@ var fsm = sm.create({
                 } else {
                     sp.drain(function() {
                         console.log("Sent: " + serialCmd);
-                        fsm.transition();
-//                        setTimeout( function () {fsm.transition();}, 2000); // This allows for leaving state
+//                        fsm.transition();
+                        setTimeout( function () {fsm.transition();}, 2000); // This allows for leaving state
                     });
                 }
             });
