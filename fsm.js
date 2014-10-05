@@ -1,5 +1,4 @@
-var graphviz = require('graphviz');
-
+var dagreD3= require("dagre-d3");
 var _transitions,
     _actions,
     _state,
@@ -35,6 +34,43 @@ exports.machine = function (transitions, actions, state, states, wss) {
   loop(); 
 }
 
+exports.graphlib = function (res) {
+  var g = new dagreD3.Digraph();
+
+  //var g = new graphlib.Graph({directed: true, compound:false, multigraph: false});
+//   g.setDefaultEdgeLabel(function() { return {}; });
+
+  for (state in _states) {
+    var nospacestate = _states[state].replace(/ /g,'');
+    var stateNode = g.addNode(nospacestate, {label: _states[state]});//,{"color" : "blue" });
+  }
+  for (state in _states) {
+    if (_states[state] === _state) {
+//      stateNode.set("style", "filled");
+    }
+    for (toState in _states) {
+      if (_transitions[_states[state]]) {
+        if (_transitions[_states[state]][_states[toState]]) {
+          var functionStr = _transitions[_states[state]][_states[toState]].toString();
+          var re = /function\s+\(.*\)\s+\{\sreturn(.+)\(\);\}/; 
+          m = re.exec(functionStr);
+          if (m == null) m = ["", "."]; 
+    	    var nospacestate = _states[state].replace(/ /g,'');
+    	    var nospacetostate = _states[toState].replace(/ /g,'');
+            console.log("Getting there");
+    	    console.log("from state: " + nospacestate);
+    	    console.log("to state: " + nospacetostate);
+	    if(nospacetostate && nospacestate) {
+              g.addEdge(null, nospacestate, nospacetostate);
+            }
+        }
+      }
+    }
+  }
+  var serializedGraph = dagreD3.json.encode(g);
+//  res.end(serializedGraph);
+  res.end(JSON.stringify(serializedGraph));
+}
 // Takes a http response stream and writes 
 // a png of current state machine to it
 exports.draw = function (res) {

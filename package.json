@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dagre": "^0.5.0",
+    "dagre-d3": "^0.2.9",
+    "graphlib": "^0.8.0",
     "graphviz": "0.0.8",
     "javascript-state-machine": "^2.3.2",
     "serialport": "1.4.5",

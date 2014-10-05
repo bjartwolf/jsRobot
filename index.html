@@ -2,6 +2,7 @@
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
 <script language="javascript" type="text/javascript">
+
   var ip = 'localhost';
   var wsUri = "ws://"+ip+":8080/";
   var output; 
@@ -9,12 +10,24 @@
     websocket = new WebSocket(wsUri);
     websocket.onmessage = function (evt) { onMessage(evt) };
   }
-  function updateFSM() {
-      var time = new Date().getTime();
-      var imgElement = document.getElementById("statemachinepic");
-      imgElement.src= "http://"+ip+"/pic" + time; // + Math.round(time/1000).toString();
+  function updateDagre() {
+    var r = new XMLHttpRequest();
+    r.open("GET", "/graph", true);
+    r.onreadystatechange = function () {
+       if (r.readyState != 4 || r.status != 200) return;
+       var graphJson = JSON.parse(r.responseText);
+       //var g = graphlib.json.read(graphJson);
+       var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
+//       console.log(g);
+       var g1 = dagreD3.layout(g);
+       var renderer = new dagreD3.Renderer();
+       renderer.run(g, d3.select("svg g"));
+//       alert("Success: " + r.responseText);
+     };
+     r.send();
   }
-  function onMessage(evt) {
+
+ function onMessage(evt) {
     var lastupdate = document.getElementById("lastupdate");
     var prevupdate = document.getElementById("prevupdate");
     prevupdate.innerHTML = lastupdate.innerHTML; 
@@ -22,14 +35,43 @@
     //updateFSM();
   }
   window.setInterval( function () {
-      updateFSM();
-  },4000);
+      updateDagre();
+  },1000);
   window.addEventListener("load", init, false);
 </script>
+<script src="/d3"></script>
+<!--<script src="/graphlib"></script>-->
+<!--<script src="/dagre"></script>-->
+<script src="/dagred3"></script>
+<style>
+svg {
+    overflow: hidden;
+}
+
+.node rect {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: #fff;
+}
+
+.edgeLabel rect {
+    fill: #fff;
+}
+
+.edgePath {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: none;
+}
+</style>
 
 <h2>WebSocket Test</h2>  
+<svg width=650 height=680>
+    <g transform="translate(20,20)"/>
+</svg>
+
 <div id="output"></div> 
-<img src="/pic"/ id="statemachinepic">
+<div id="dagretest"> Dagreetst</div>
 <div id="lastupdate"> Last update </div>
 <div id="prevupdate"> Previous update </div>
 </html>
