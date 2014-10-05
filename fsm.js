@@ -23,7 +23,7 @@ exports.machine = function (transitions, actions, state, states, wss) {
         if (_actions[_state]) _actions[_state]();
         // can draw here and send refresh signal to browser to get new image by websockets.
         for (var i in _wss.clients) {
-          _wss.clients[i].send("new state: " + _state);
+          _wss.clients[i].send(getGraph());
         }
         break; // Only go to one state
       }
@@ -33,7 +33,7 @@ exports.machine = function (transitions, actions, state, states, wss) {
   loop(); 
 }
 
-exports.graphlib = function (res) {
+function getGraph () {
   var g = new dagreD3.Digraph();
   for (state in _states) {
     var stateNode = g.addNode(_states[state], {label: _states[state]});//,{"color" : "blue" });
@@ -55,5 +55,5 @@ exports.graphlib = function (res) {
     }
   }
   var serializedGraph = dagreD3.json.encode(g);
-  res.end(JSON.stringify(serializedGraph));
+  return JSON.stringify(serializedGraph);
 }

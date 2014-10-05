@@ -11,27 +11,17 @@
     websocket.onmessage = function (evt) { onMessage(evt) };
   }
   function updateDagre() {
-    var r = new XMLHttpRequest();
-    r.open("GET", "/graph", true);
-    r.onreadystatechange = function () {
-       if (r.readyState != 4 || r.status != 200) return;
-       var graphJson = JSON.parse(r.responseText);
+ }
+
+ function onMessage(evt) {
+       var graphJson = JSON.parse(evt.data);
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
-     };
-     r.send();
   }
-
- function onMessage(evt) {
-    var lastupdate = document.getElementById("lastupdate");
-    var prevupdate = document.getElementById("prevupdate");
-    prevupdate.innerHTML = lastupdate.innerHTML; 
-    lastupdate.innerHTML = evt.data + " at time: "+ new Date().getTime();
-  }
-  window.setInterval( function () {
-      updateDagre();
-  },1000);
+//  window.setInterval( function () {
+//      updateDagre();
+//  },1000);
   window.addEventListener("load", init, false);
 </script>
 <script src="/d3"></script>
