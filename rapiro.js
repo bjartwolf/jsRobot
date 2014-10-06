@@ -55,11 +55,12 @@ function convertCmdToSerial(msg) {
     if (msg == 'red') serialCmd = color("255", "000", "000");
     else if (msg == 'green') serialCmd = color("000", "255", "000");
     else if (msg == 'blue') serialCmd = color("000", "000", "255");
+    else if (msg == 'yellow') serialCmd = color("255", "255", "000");
     else if (msg == 'stop') serialCmd = "#M0";
     else if (msg == 'forward') serialCmd = "#M1";
     else if (msg == 'backward') serialCmd = "#M2";
     else if (msg == 'waveandgreen') serialCmd = "#M5";
-    else if (msg == 'raisehandsandblue') serialCmd = "#M7";
+    else if (msg == 'raisehandandblue') serialCmd = "#M7";
     else throw "No such command"
     return serialCmd;
 } 

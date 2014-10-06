@@ -11,6 +11,7 @@
   "dependencies": {
     "dagre-d3": "^0.2.9",
     "javascript-state-machine": "^2.3.2",
+    "lodash": "^2.4.1",
     "serialport": "1.4.5",
     "simple-mplayer": "0.0.3",
     "ws": "^0.4.32"

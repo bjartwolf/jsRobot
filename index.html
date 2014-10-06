@@ -1,27 +1,56 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
+<script src="lib/jquery-latest.min.js"></script>
+<script src="lib/d3.v3.min.js"></script>
+<script src="lib/lodash.min.js"></script>
+<script src="lib/dagre-d3.min.js"></script>
+<script src="lib/d3-timeline.js"></script>
 <script language="javascript" type="text/javascript">
   var ip = 'localhost';
   var wsUri = "ws://"+ip+":8080/";
+  var state;
+  var prevtime = new Date().getTime();
+  var stateTimes = [];
+  function drawTimeline() {
+      var myNode = document.getElementById("timeline1");
+      while (myNode.firstChild) {
+          myNode.removeChild(myNode.firstChild);
+      }
+      var chart = d3.timeline().width(1200).stack();
+      d3.select("#timeline1").append("svg").attr("width",1200).datum(stateTimes).call(chart);
+  }
+
+  window.setInterval(drawTimeline, 2000); 
+
   function init() {
     websocket = new WebSocket(wsUri);
     websocket.onmessage = function (evt) { onMessage(evt) };
   }
-  function updateDagre() {
- }
 
- function onMessage(evt) {
+function onMessage(evt) {
        var msg = JSON.parse(evt.data);
        var graphJson = JSON.parse(msg.graph);
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
+       var prevstate = state;
+       state = msg.stateChange.newState;
+       var time = msg.stateChange.time;
+       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
+       var indexOfPrevLabel = _.findIndex(stateTimes, function (itm) { return itm.label == prevstate;});
+       if (indexOfLabel == -1) { 
+          stateTimes[stateTimes.length] = {"label": state, "times": [{"starting_time" : prevtime, "ending_time": time}]};
+       } else {
+          stateTimes[indexOfLabel].times.push({"starting_time": prevtime, "ending_time": time});
+       }
+       prevtime = time;
   }
   window.addEventListener("load", init, false);
 </script>
-<script src="lib/d3.v3.min.js"></script>
-<script src="lib/dagre-d3.min.js"></script>
+
+
+
 
 <style>
 svg {
@@ -43,10 +72,43 @@ svg {
     stroke-width: 1.5px;
     fill: none;
 }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .timeline-label {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+
+    #timeline2 .axis {
+      transform: translate(0px,30px);
+      -ms-transform: translate(0px,30px); /* IE 9 */
+      -webkit-transform: translate(0px,30px); /* Safari and Chrome */
+      -o-transform: translate(0px,30px); /* Opera */
+      -moz-transform: translate(0px,30px); /* Firefox */
+    }
+
+    .coloredDiv {
+      height:20px; width:20px; float:left;
+    }
+
 </style>
 
 <h2>FSM</h2>  
 <svg width=1250 height=680>
     <g transform="translate(20,20)"/>
 </svg>
+<h3>A simple timeline</h3>
+<div id="timeline1" width=1250 height=680>
+</div>
 </html>
