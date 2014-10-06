@@ -13,7 +13,7 @@ exports.machine = function (transitions, actions, state, states, wss) {
   _states = states;
   _wss = wss;
   wss.on('connection', function(ws) {
-     ws.send(getGraph());
+     ws.send(JSON.stringify({graph: getGraph(), stateChange:{time: new Date().getTime(), newState: _state}}));
   });
 
    function loop() {
@@ -27,7 +27,7 @@ exports.machine = function (transitions, actions, state, states, wss) {
         if (_actions[_state]) _actions[_state]();
         // can draw here and send refresh signal to browser to get new image by websockets.
         for (var i in _wss.clients) {
-          _wss.clients[i].send(getGraph());
+          _wss.clients[i].send(JSON.stringify({graph: getGraph(), stateChange:{time: new Date().getTime(), newState: _state}}));
         }
         break; // Only go to one state
       }

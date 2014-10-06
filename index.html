@@ -12,7 +12,8 @@
  }
 
  function onMessage(evt) {
-       var graphJson = JSON.parse(evt.data);
+       var msg = JSON.parse(evt.data);
+       var graphJson = JSON.parse(msg.graph);
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
