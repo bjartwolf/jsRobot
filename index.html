@@ -37,10 +37,10 @@ function onMessage(evt) {
        var prevstate = state;
        state = msg.stateChange.newState;
        var time = msg.stateChange.time;
-       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
-       var indexOfPrevLabel = _.findIndex(stateTimes, function (itm) { return itm.label == prevstate;});
+i//       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
+       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == prevstate;});
        if (indexOfLabel == -1) { 
-          stateTimes[stateTimes.length] = {"label": state, "times": [{"starting_time" : prevtime, "ending_time": time}]};
+          stateTimes[stateTimes.length] = {"label": prevstate, "times": [{"starting_time" : prevtime, "ending_time": time}]};
        } else {
           stateTimes[indexOfLabel].times.push({"starting_time": prevtime, "ending_time": time});
        }
