@@ -114,7 +114,7 @@ var server = http.createServer(function(req, res) {
      res.end('Data recieved');
   } else {
      res.writeHead(404, {'Content-Type': 'text/plain'});
-     res.end('No endpoint');
+     res.end('Nothing here');
   }
 }).listen(80, ip);
 console.log("Listening");

@@ -12,7 +12,11 @@ exports.machine = function (transitions, actions, state, states, wss) {
   _state = state;
   _states = states;
   _wss = wss;
-  function loop() {
+  wss.on('connection', function(ws) {
+     ws.send(getGraph());
+  });
+
+   function loop() {
     for (possibleNewState in _transitions[_state]) {
       if (_transitions[_state][possibleNewState]()) {
         // Changing state

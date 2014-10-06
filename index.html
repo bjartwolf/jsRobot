@@ -2,10 +2,8 @@
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
 <script language="javascript" type="text/javascript">
-
   var ip = 'localhost';
   var wsUri = "ws://"+ip+":8080/";
-  var output; 
   function init() {
     websocket = new WebSocket(wsUri);
     websocket.onmessage = function (evt) { onMessage(evt) };
@@ -19,9 +17,6 @@
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
   }
-//  window.setInterval( function () {
-//      updateDagre();
-//  },1000);
   window.addEventListener("load", init, false);
 </script>
 <script src="lib/d3.v3.min.js"></script>
@@ -49,13 +44,8 @@ svg {
 }
 </style>
 
-<h2>WebSocket Test</h2>  
+<h2>FSM</h2>  
 <svg width=1250 height=680>
     <g transform="translate(20,20)"/>
 </svg>
-
-<div id="output"></div> 
-<div id="dagretest"> Dagreetst</div>
-<div id="lastupdate"> Last update </div>
-<div id="prevupdate"> Previous update </div>
 </html>
