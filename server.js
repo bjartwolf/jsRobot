@@ -97,24 +97,14 @@ var queue = process_messages_fsm(wss);
 
 var server = http.createServer(function(req, res) {
   var cmd = req.url.substring(1); // remove slash
-  if (cmd == "fsm") {
+  if (cmd == "") {
     var index = fs.readFileSync("index.html");
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end(index);
- } else if (cmd == "d3") {
-    var index = fs.readFileSync("d3/d3.v3.min.js");
+  } else if (cmd.substr(0,3) == "lib") {
+    var index = fs.readFileSync(cmd);
     res.writeHead(200, {'Content-Type': 'application/javascript'});
     res.end(index);
- } else if (cmd == "dagred3") {
-    var index = fs.readFileSync("dagre3d/dagre-d3.js");
-    res.writeHead(200, {'Content-Type': 'application/javascript'});
-    res.end(index);
-  } else if (cmd.substr(0,3)  == "gra") {
-     res.writeHead(200, {'Content-Type': 'application/json'});
-     fsm.graphlib(res);
-  } else if (cmd.substr(0,3)  == "pic") {
-     res.writeHead(200, {'Content-Type': 'image/png'});
-     fsm.draw(res);
   } else if (cmd == "data") {
      res.writeHead(200, {'Content-Type': 'text/plain'});
      var msg = req.headers['content-type'];
