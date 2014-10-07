@@ -37,7 +37,7 @@ function onMessage(evt) {
        var prevstate = state;
        state = msg.stateChange.newState;
        var time = msg.stateChange.time;
-i//       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
+//       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
        var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == prevstate;});
        if (indexOfLabel == -1) { 
           stateTimes[stateTimes.length] = {"label": prevstate, "times": [{"starting_time" : prevtime, "ending_time": time}]};
@@ -73,6 +73,10 @@ svg {
     fill: none;
 }
 
+#id {
+    margin-top: 500px
+}
+
     .axis path,
     .axis line {
       fill: none;
@@ -103,12 +107,11 @@ svg {
     }
 
 </style>
-
-<h2>FSM</h2>  
-<svg width=1250 height=680>
-    <g transform="translate(20,20)"/>
-</svg>
-<h3>A simple timeline</h3>
+<h2>A simple timeline</h2>
 <div id="timeline1" width=1250 height=680>
 </div>
+<h2>FSM</h2>  
+<svg width=1250 height=680 id="fsm">
+    <g transform="translate(20,20)"/>
+</svg>
 </html>
