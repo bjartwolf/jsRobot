@@ -9,8 +9,12 @@
 <script language="javascript" type="text/javascript">
   var ip = 'localhost';
   var wsUri = "ws://"+ip+":8080/";
-  var state;
   var prevtime = new Date().getTime();
+var state = '';
+  var drawState = "init"; //
+  var indexInTimeArray = 0;
+  var stateTimesCurrent = 0;
+  var startTimeTmp = new Date().getTime();
   var stateTimes = [];
   function drawTimeline() {
       var myNode = document.getElementById("timeline1");
@@ -21,7 +25,11 @@
       d3.select("#timeline1").append("svg").attr("width",1200).datum(stateTimes).call(chart);
   }
 
-  window.setInterval(drawTimeline, 2000); 
+  window.setInterval(function() {
+	var tmp = stateTimes[0];
+        stateTimes[0] = {"label": "test", "times" : [{"starting_time": startTimeTmp, "ending_time": new Date().getTime()}]};
+	drawTimeline();
+}, 16); 
 
   function init() {
     websocket = new WebSocket(wsUri);
@@ -34,6 +42,10 @@ function onMessage(evt) {
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
+//       if (drawState == "init") {
+//         stateTimes[0] = {"label": state, "times": [{"starting_time": msg.stateChange.time, "ending_time": new Date().getTime()}]};
+//         drawState = "initialized";
+ //      }
        var prevstate = state;
        state = msg.stateChange.newState;
        var time = msg.stateChange.time;
