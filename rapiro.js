@@ -61,7 +61,7 @@ function convertCmdToSerial(msg) {
     else if (msg == 'backward') serialCmd = "#M2";
     else if (msg == 'waveandgreen') serialCmd = "#M5";
     else if (msg == 'raisehandandblue') serialCmd = "#M7";
-    else throw "No such command"
+    else throw "No such command" + msg 
     return serialCmd;
 } 
 
