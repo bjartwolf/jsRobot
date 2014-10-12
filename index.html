@@ -9,12 +9,11 @@
 <script language="javascript" type="text/javascript">
   var ip = 'localhost';
   var wsUri = "ws://"+ip+":8080/";
-  var prevtime = new Date().getTime();
-var state = '';
-  var drawState = "init"; //
-  var indexInTimeArray = 0;
-  var stateTimesCurrent = 0;
-  var startTimeTmp = new Date().getTime();
+  var state = '';
+  //var timelinelength = 60000; // et minutt
+  var timelinelength = 5000;
+  var time;
+  var clock;
   var stateTimes = [];
   function drawTimeline() {
       var myNode = document.getElementById("timeline1");
@@ -25,11 +24,25 @@ var state = '';
       d3.select("#timeline1").append("svg").attr("width",1200).datum(stateTimes).call(chart);
   }
 
+  var timeIncrementInPlot = 16;
   window.setInterval(function() {
-	var tmp = stateTimes[0];
-        stateTimes[0] = {"label": "test", "times" : [{"starting_time": startTimeTmp, "ending_time": new Date().getTime()}]};
+        clock += timeIncrementInPlot;
+        // Find current label
+       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
+       if (indexOfLabel === -1) return;
+        // Find last timeslot
+       var allSequences = stateTimes[indexOfLabel].times;
+       var latestSequence = _.max(allSequences, function (itm) { return itm.ending_time;});
+        // Increment stoptime
+        latestSequence.ending_time += timeIncrementInPlot;
+        stateTimes =  _.map(stateTimes, function (stateTime) {
+             _.remove(stateTime.times, function (itm) {
+                 return ((clock - itm.ending_time > timelinelength)); 
+             });
+             return stateTime;
+        }); 
 	drawTimeline();
-}, 16); 
+}, timeIncrementInPlot); 
 
   function init() {
     websocket = new WebSocket(wsUri);
@@ -42,21 +55,19 @@ function onMessage(evt) {
        var g = dagreD3.json.decode(graphJson.nodes, graphJson.edges);
        var renderer = new dagreD3.Renderer();
        renderer.run(g, d3.select("svg g"));
-//       if (drawState == "init") {
-//         stateTimes[0] = {"label": state, "times": [{"starting_time": msg.stateChange.time, "ending_time": new Date().getTime()}]};
-//         drawState = "initialized";
- //      }
-       var prevstate = state;
        state = msg.stateChange.newState;
-       var time = msg.stateChange.time;
-//       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
-       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == prevstate;});
+       console.log(state);
+       time = msg.stateChange.time;
+       clock = time;
+       var indexOfLabel = _.findIndex(stateTimes, function (itm) { return itm.label == state;});
        if (indexOfLabel == -1) { 
-          stateTimes[stateTimes.length] = {"label": prevstate, "times": [{"starting_time" : prevtime, "ending_time": time}]};
+          // Could not find label, add new label to end
+          stateTimes[stateTimes.length] = {"label": state, "times": [{"starting_time" : time, "ending_time": time}]};
        } else {
-          stateTimes[indexOfLabel].times.push({"starting_time": prevtime, "ending_time": time});
+          // Add new sequence to existing label
+          stateTimes[indexOfLabel].times.push({"starting_time": time, "ending_time": time});
        }
-       prevtime = time;
+       drawTimeline();
   }
   window.addEventListener("load", init, false);
 </script>

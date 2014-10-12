@@ -79,8 +79,7 @@ function process_messages_fsm(wss) {
 		     rapiro.send("waveandgreen");
        } 
        actions[RESTFUL] = function () {
-         var msg = messages.shift();
-		     rapiro.send("green");
+          rapiro.send("green");
        } 
    fsm.machine(transitions, actions, state, states, wss);
    return function(msg) { 
