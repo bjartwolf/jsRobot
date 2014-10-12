@@ -20,7 +20,8 @@
       while (myNode.firstChild) {
           myNode.removeChild(myNode.firstChild);
       }
-      var chart = d3.timeline().width(1200).stack();
+      var chart = d3.timeline().width(1200).
+         beginning(clock-timelinelength).ending(clock).stack();
       d3.select("#timeline1").append("svg").attr("width",1200).datum(stateTimes).call(chart);
   }
 
@@ -35,12 +36,6 @@
        var latestSequence = _.max(allSequences, function (itm) { return itm.ending_time;});
         // Increment stoptime
         latestSequence.ending_time += timeIncrementInPlot;
-        stateTimes =  _.map(stateTimes, function (stateTime) {
-             _.remove(stateTime.times, function (itm) {
-                 return ((clock - itm.ending_time > timelinelength)); 
-             });
-             return stateTime;
-        }); 
 	drawTimeline();
 }, timeIncrementInPlot); 
 
